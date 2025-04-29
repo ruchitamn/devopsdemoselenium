@@ -2,8 +2,14 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'  // Replace with actual tool names from Jenkins configuration
-        jdk 'JDK'
+        maven 'Maven'  // Name as configured in Global Tool Configuration
+        jdk 'JDK'      // Name as configured in Global Tool Configuration
+    }
+
+    environment {
+        // Set JAVA_HOME dynamically using the Jenkins tool step
+        JAVA_HOME = "${tool 'JDK'}"
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -15,6 +21,12 @@ pipeline {
 
         stage('Build') {
             steps {
+                // Verify Java & Maven setup
+                sh 'echo "JAVA_HOME is: $JAVA_HOME"'
+                sh 'java -version'
+                sh 'mvn -version'
+
+                // Build with Maven
                 sh 'mvn clean package'
             }
         }
